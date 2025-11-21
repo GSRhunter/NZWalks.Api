@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NZWalks.API.Data;
 using NZWalks.API.Models.Domain;
 
 namespace NZWalks.API.Controllers
@@ -8,25 +10,32 @@ namespace NZWalks.API.Controllers
     [ApiController]
     public class RegionsController : ControllerBase
     {
+        private readonly NZWalksDbContext dbContext;
+
+        public RegionsController(NZWalksDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }  
         [HttpGet ]
         public IActionResult GetAll()
         {
-            var regions = new List<Region>
-            { new  Region
-            {   Id = Guid.NewGuid(),
-                Name = "Auckland region",
-                Code = "AKL",
-                RegionImageUrl = "https://www.pexels.com/photo/green-trees-under-white-sky-2790395/"
-            },
-            new  Region
-            {   Id = Guid.NewGuid(),
-                Name = "Newk region",
-                Code = "NKR",
-                RegionImageUrl = "https://www.pexels.com/photo/green-trees-under-white-sky-2790395/"
-            },
-            };
-            return Ok(regions);
 
+         var region=   dbContext.Regions.ToList();
+            return Ok(region);  
+
+
+        }
+
+        [HttpGet("{id:Guid}")]
+        public IActionResult GetById([FromRoute] Guid id)
+        {
+            var regions = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            if(regions == null)
+            {
+                return NotFound();
+
+            }
+            return Ok(regions);
         }
 
     }

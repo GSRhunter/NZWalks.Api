@@ -90,6 +90,64 @@ namespace NZWalks.API.Controllers
 
 
         }
+        //UpdateRegion
+        [HttpPut]
+        [Route("{id}")]
+        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateregionRequestDto updateregionRequestDto)
+        {
+            var regionDomainModel = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            if (regionDomainModel == null)
+            {
+                return NotFound();
+            }
+
+            regionDomainModel.Code = updateregionRequestDto.Code;
+            regionDomainModel.Name = updateregionRequestDto.Name;
+            regionDomainModel.RegionImageUrl = updateregionRequestDto.RegionImageUrl;
+
+            dbContext.SaveChanges();
+
+            var regionDto = new RegionDto
+            {
+                Id = regionDomainModel.Id,
+                Name = regionDomainModel.Name,
+                Code = regionDomainModel.Code,
+            };
+
+            return Ok(regionDto);
+
+
+        }
+
+        //Delete method
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+
+        public IActionResult Delete([FromRoute] Guid id)
+        {
+          var regiondomainmodel =   dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            if(regiondomainmodel == null)
+
+            {
+                return NotFound();
+
+            }
+            dbContext.Regions.Remove(regiondomainmodel);
+            dbContext.SaveChanges();
+            var regionDto = new RegionDto
+            {
+                Id = regiondomainmodel.Id,
+                Name = regiondomainmodel.Name,
+                Code = regiondomainmodel.Code,
+                RegionImageUrl = regiondomainmodel.RegionImageUrl,
+
+            };
+            return Ok(regionDto);
+
+
+
+        }
 
     }
 }
